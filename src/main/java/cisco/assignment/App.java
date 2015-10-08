@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 //Kyle Vedder
 //kvedder@umass.edu
+//Resume: http://people.umass.edu/kvedder/resume
 
 @SpringBootApplication
 @EnableAutoConfiguration

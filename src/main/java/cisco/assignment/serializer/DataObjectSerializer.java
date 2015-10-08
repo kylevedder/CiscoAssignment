@@ -16,9 +16,7 @@ public class DataObjectSerializer  extends JsonSerializer<DataObject> {
 	public void serialize(DataObject dataObj, JsonGenerator jgen, SerializerProvider provider)
 			throws IOException, JsonProcessingException {
 		jgen.writeStartObject();
-		jgen.writeStringField("uid", String.valueOf(dataObj.getUid()));
-		System.out.println("HELLO WORLD");
-		System.out.println(dataObj.getData().size());
+		jgen.writeStringField("uid", String.valueOf(dataObj.getUid()));		
 		for(Entry<String, Object> entry : dataObj.getData().entrySet())
 		{
 			jgen.writeObjectField(entry.getKey(), entry.getValue());

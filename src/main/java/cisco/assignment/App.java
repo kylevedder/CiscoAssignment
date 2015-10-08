@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-//Kyle Vedder
+//Kyle C Vedder
 //kvedder@umass.edu
 //Resume: http://people.umass.edu/kvedder/resume
 

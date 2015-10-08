@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+//Kyle Vedder
+//kvedder@umass.edu
+
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan(basePackages = "cisco.assignment")

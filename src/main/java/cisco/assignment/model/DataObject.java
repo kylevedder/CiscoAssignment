@@ -4,10 +4,13 @@ import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import cisco.assignment.serializer.DataObjectDeserializer;
 import cisco.assignment.serializer.DataObjectSerializer;
 
+@JsonDeserialize(using = DataObjectDeserializer.class)
 @JsonSerialize(using = DataObjectSerializer.class)
 public class DataObject {
 
@@ -34,6 +37,24 @@ public class DataObject {
 
 	public Map<String, Object> getData() {
 		return data;
+	}
+
+	public void setData(Map<String, Object> data) {
+		this.data = data;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof DataObject)) {
+			return false;
+		}
+		DataObject dataObj = (DataObject) obj;
+		// compare the equality of the uid and the data
+		return (this.getUid().equals(dataObj.getUid()) && this.getData().equals(dataObj.getData()));
 	}
 
 }

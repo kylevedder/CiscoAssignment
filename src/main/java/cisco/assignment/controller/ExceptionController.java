@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import cisco.assignment.exception.EntryNotFoundException;
+import cisco.assignment.exception.InvalidDataException;
 import cisco.assignment.exception.InvalidURIException;
 import cisco.assignment.exception.UIDMismatchException;
 import cisco.assignment.exception.UnsupportedMethodException;
@@ -27,25 +28,15 @@ public class ExceptionController {
 	@ExceptionHandler({ HttpMessageNotReadableException.class })
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
-	public ErrorObject badMessage(HttpServletRequest request) {
-		logger.error("Payload not JSON");
-		return new ErrorObject(request.getMethod().toUpperCase(), request.getRequestURL().toString(),
-				"Not a JSON Object");
+	public ErrorObject badMessage(HttpServletRequest request, HttpServletResponse response, Exception ex) {
+		return dumpExceptionBadRequest(request, response, new InvalidDataException());
 	}
 
-	@ExceptionHandler({ InvalidURIException.class, UIDMismatchException.class, EntryNotFoundException.class })
+	@ExceptionHandler({ UnsupportedMethodException.class, InvalidURIException.class, UIDMismatchException.class,
+			EntryNotFoundException.class })
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
 	public ErrorObject dumpExceptionBadRequest(HttpServletRequest request, HttpServletResponse response, Exception ex) {
-		logger.error(request.getMethod() + ": " + ex.getMessage());
-		return new ErrorObject(request.getMethod().toUpperCase(), request.getRequestURL().toString(), ex.getMessage());
-	}
-
-	@ExceptionHandler({ UnsupportedMethodException.class })
-	@ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
-	@ResponseBody
-	public ErrorObject dumpExceptionNotImplemented(HttpServletRequest request, HttpServletResponse response,
-			Exception ex) {
 		logger.error(request.getMethod() + ": " + ex.getMessage());
 		return new ErrorObject(request.getMethod().toUpperCase(), request.getRequestURL().toString(), ex.getMessage());
 	}

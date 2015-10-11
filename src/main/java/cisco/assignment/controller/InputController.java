@@ -35,19 +35,6 @@ public class InputController {
 	@Autowired
 	private URLUtils urlUtils;
 
-	@RequestMapping(method = {})
-	public void unmappedOperations(HttpServletRequest request, HttpServletResponse response) {
-		switch (request.getMethod().toUpperCase()) {
-		case "GET":
-		case "POST":
-		case "DELETE":
-		case "PUT":
-			throw new InvalidURIException();
-		default:
-			throw new UnsupportedMethodException();
-		}
-	}
-
 	@RequestMapping(value = "${api-uri}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public DataObject post(@RequestBody Map<String, Object> data) {
 		logger.debug("POST: Create new entry");
@@ -56,9 +43,10 @@ public class InputController {
 
 	@RequestMapping(value = "${api-uri}/{uid}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	public DataObject put(@PathVariable String uid, @RequestBody Map<String, Object> data) {
-		logger.debug("PUT: Add new entry");
+		logger.debug("PUT: Add new entry with uid \"" + uid + "\"");
 		if (!uid.equals(data.get("uid"))) {
-			logger.error("PUT: Mismatch in entry UIDs", new UIDMismatchException());
+			logger.error("PUT: Mismatch in entry UIDs");
+			throw new UIDMismatchException();
 		}
 		return dataRepo.save(new DataObject(uid, data));
 	}
@@ -68,7 +56,8 @@ public class InputController {
 		logger.debug("GET: Getting entry with uid \"" + uid + "\"");
 		DataObject dataObject = dataRepo.findByUid(uid);
 		if (dataObject == null) {
-			logger.error("GET: Requested entry with UID \"" + uid + "\" not found!", new EntryNotFoundException());
+			logger.error("GET: Requested entry with UID \"" + uid + "\" not found!");
+			throw new EntryNotFoundException();
 		}
 		return dataObject;
 	}
@@ -88,8 +77,22 @@ public class InputController {
 	public void delete(@PathVariable String uid) {
 		logger.debug("DELETE: Deleting entry with uid \"" + uid + "\"");
 		if (dataRepo.findByUid(uid) == null) {
-			logger.error("DELETE: Requested UID \"" + uid + "\" not found!", new EntryNotFoundException());
+			logger.error("DELETE: Requested UID \"" + uid + "\" not found!");
+			throw new EntryNotFoundException();
 		}
 		dataRepo.delete(uid);
+	}
+
+	@RequestMapping(method = {})
+	public void unmappedOperations(HttpServletRequest request, HttpServletResponse response) {
+		switch (request.getMethod().toUpperCase()) {
+		case "GET":
+		case "POST":
+		case "DELETE":
+		case "PUT":
+			throw new InvalidURIException();
+		default:
+			throw new UnsupportedMethodException();
+		}
 	}
 }

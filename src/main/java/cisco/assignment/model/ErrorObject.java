@@ -1,14 +1,12 @@
 package cisco.assignment.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import cisco.assignment.serializer.ErrorObjectSerializer;
-
-@JsonSerialize(using = ErrorObjectSerializer.class)
 public class ErrorObject {
 	private String verb;
 	private String url;
 	private String message;
+
+	public ErrorObject() {
+	}
 
 	public ErrorObject(String verb, String url, String message) {
 		this.verb = verb;
@@ -26,5 +24,15 @@ public class ErrorObject {
 
 	public String getMessage() {
 		return message;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof ErrorObject)) {
+			return false;
+		}
+		ErrorObject eo = (ErrorObject) obj;
+		return (this.getVerb().equals(eo.getVerb()) && this.getUrl().equals(eo.getUrl())
+				&& this.getMessage().equals(eo.getMessage()));
 	}
 }

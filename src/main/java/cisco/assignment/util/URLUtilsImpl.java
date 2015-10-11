@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class URLUtilsImpl implements URLUtils {
 	@Override
 	public String appendURI(String url, String uri) {
-		if (!url.endsWith("/"))
+		if (!url.endsWith("/") && !uri.startsWith("/"))
 			url = url.concat("/");
 		url = url.concat(uri);
 		return url;

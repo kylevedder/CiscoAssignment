@@ -16,11 +16,31 @@ public class URLUtilsTest {
 	}
 
 	@Test
-	public void appendURITest() {
+	public void appendNoSlash() {
 		String sampleURL = "my.url/my";
 		String sampleURI = "sample/uri";
 
 		String appendedURL = sampleURL + "/" + sampleURI;
+
+		assertEquals(appendedURL, urlUtils.appendURI(sampleURL, sampleURI));
+	}
+	
+	@Test
+	public void appendURISlash() {
+		String sampleURL = "my.url/my";
+		String sampleURI = "/sample/uri";
+
+		String appendedURL = sampleURL + sampleURI;
+
+		assertEquals(appendedURL, urlUtils.appendURI(sampleURL, sampleURI));
+	}
+	
+	@Test
+	public void appendURILSlash() {
+		String sampleURL = "my.url/my/";
+		String sampleURI = "sample/uri";
+
+		String appendedURL = sampleURL + sampleURI;
 
 		assertEquals(appendedURL, urlUtils.appendURI(sampleURL, sampleURI));
 	}

@@ -44,7 +44,7 @@ import cisco.assignment.util.URLUtils;
 @ComponentScan(basePackages = "cisco.assignment")
 @IntegrationTest("server.port:0")
 @WebAppConfiguration
-public class InputControllerIntegrationTest {
+public class IntegrationTests {
 
 	@Autowired
 	private URLUtils urlUtils;
@@ -63,7 +63,6 @@ public class InputControllerIntegrationTest {
 	String compoundUrl = null;
 
 	String baseUrl;
-	private static ObjectMapper OBJ_MAPPER = null;
 	private TestRestTemplate restTemplate = new TestRestTemplate();
 
 	private Random r = null;
@@ -101,7 +100,6 @@ public class InputControllerIntegrationTest {
 
 	@Before
 	public void setup() {
-		OBJ_MAPPER = new ObjectMapper();
 		baseUrl = "http://localhost:" + port + "/";
 		r = new Random(System.currentTimeMillis());
 		compoundUrl = urlUtils.appendURI(baseUrl, apiuri);
@@ -437,7 +435,6 @@ public class InputControllerIntegrationTest {
 	@Test
 	public void errorBadURI() throws Exception {
 
-		String uid = randomUID();
 		String randomURL = urlUtils.appendURI(baseUrl, randomUID());
 		ErrorObject getResponse = sendRequest("", randomURL, HttpMethod.GET, ErrorObject.class);
 		ErrorObject postResponse = sendRequest("", randomURL, HttpMethod.POST, ErrorObject.class);

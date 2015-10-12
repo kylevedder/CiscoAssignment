@@ -21,9 +21,9 @@ release server.
 
 Building / Running
 ============
-To build, execute the "buildScript.sh" shell script.
+To build, execute the **buildScript.sh** shell script.
 
-To run, execute the "assignment-<version>.jar" JAR file in the "/target" directory.
+To run, execute the **assignment-<version>.jar** JAR file in the **/target** directory.
 
 API
 =======

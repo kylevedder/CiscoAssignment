@@ -1,4 +1,4 @@
-package cisco.assignment.repo;
+package cisco.assignment.database;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -11,7 +11,7 @@ import cisco.assignment.model.DataObject;
  * @author kyle
  *
  */
-public interface DataRepo extends MongoRepository<DataObject, String> {
+public interface Database extends MongoRepository<DataObject, String> {
 	/**
 	 * Returns an entry with the specified "uid"
 	 * 

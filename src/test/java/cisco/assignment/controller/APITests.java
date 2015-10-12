@@ -1,6 +1,8 @@
 package cisco.assignment.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,16 +28,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import cisco.assignment.App;
+import cisco.assignment.database.Database;
 import cisco.assignment.exception.EntryNotFoundException;
 import cisco.assignment.exception.InvalidDataException;
 import cisco.assignment.exception.InvalidURIException;
 import cisco.assignment.model.DataObject;
 import cisco.assignment.model.ErrorObject;
 import cisco.assignment.model.URLListObject;
-import cisco.assignment.repo.DataRepo;
 import cisco.assignment.util.URLUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -54,7 +54,7 @@ public class APITests {
 	private String apiuri;
 
 	@Autowired
-	private DataRepo dataRepo;
+	private Database database;
 
 	String compoundUrl = null;
 
@@ -114,12 +114,12 @@ public class APITests {
 		baseUrl = "http://localhost:" + port + "/";
 		r = new Random(System.currentTimeMillis());
 		compoundUrl = urlUtils.appendURI(baseUrl, apiuri);
-		dataRepo.deleteAll();
+		database.deleteAll();
 	}
 
 	@After
 	public void teardown() {
-		dataRepo.deleteAll();
+		database.deleteAll();
 	}
 
 	/**
@@ -207,7 +207,7 @@ public class APITests {
 		// ======
 
 		// pull data from database
-		DataObject databaseRecord = dataRepo.findByUid(postResponse.getUid());
+		DataObject databaseRecord = database.findByUid(postResponse.getUid());
 
 		// check that database record matches posted response
 		assertEquals("POST response does not match sample response", postResponse, databaseRecord);
@@ -301,7 +301,7 @@ public class APITests {
 		// ======
 		// Check in database
 		// ======
-		DataObject databaseRecord = dataRepo.findByUid(sampleUID);
+		DataObject databaseRecord = database.findByUid(sampleUID);
 
 		// compare put
 		assertEquals("PUT response does not match the database record", putResponse, databaseRecord);
@@ -381,7 +381,7 @@ public class APITests {
 
 		DataObject sampleDataObject = new DataObject(sampleUID, sampleData);
 
-		dataRepo.save(sampleDataObject);
+		database.save(sampleDataObject);
 		// ======
 		// Send PUT
 		// ======
@@ -392,7 +392,7 @@ public class APITests {
 		// Check PUT
 		// ======
 
-		DataObject databaseRecord = dataRepo.findByUid(sampleUID);
+		DataObject databaseRecord = database.findByUid(sampleUID);
 
 		assertNull("Database still holds UID", databaseRecord);
 	}
@@ -426,9 +426,9 @@ public class APITests {
 				urlUtils.appendURI(compoundUrl, s2.getUid()), urlUtils.appendURI(compoundUrl, s3.getUid())));
 
 		// populate database with items
-		dataRepo.save(s1);
-		dataRepo.save(s2);
-		dataRepo.save(s3);
+		database.save(s1);
+		database.save(s2);
+		database.save(s3);
 
 		// ======
 		// Send GET
@@ -475,7 +475,7 @@ public class APITests {
 		assertNotNull("POST returned null response", postResponse);
 		assertNotNull("POST response uid is null", postResponse.getUid());
 
-		DataObject databaseRecordPost = dataRepo.findByUid(postResponse.getUid());
+		DataObject databaseRecordPost = database.findByUid(postResponse.getUid());
 
 		assertEquals("Record in database does not match the record returned by POST.", postResponse,
 				databaseRecordPost);
@@ -487,7 +487,7 @@ public class APITests {
 		DataObject putResponse = sendRequest(samplePayload, urlUtils.appendURI(compoundUrl, postResponse.getUid()),
 				HttpMethod.PUT, DataObject.class);
 
-		DataObject databaseRecordPut = dataRepo.findByUid(postResponse.getUid());
+		DataObject databaseRecordPut = database.findByUid(postResponse.getUid());
 
 		assertNotNull("PUT response was null", putResponse);
 		assertEquals("PUT response not as expected", putResponse, samplePayload);
@@ -500,7 +500,7 @@ public class APITests {
 		DataObject getResponse = sendRequest("", urlUtils.appendURI(compoundUrl, postResponse.getUid()), HttpMethod.GET,
 				DataObject.class);
 
-		DataObject databaseRecordGet = dataRepo.findByUid(postResponse.getUid());
+		DataObject databaseRecordGet = database.findByUid(postResponse.getUid());
 
 		assertNotNull("PUT response was null", getResponse);
 		assertEquals("PUT response not as expected", getResponse, samplePayload);
@@ -513,7 +513,7 @@ public class APITests {
 		sendRequest(samplePayload, urlUtils.appendURI(compoundUrl, samplePayload.getUid()), HttpMethod.DELETE,
 				DataObject.class);
 
-		DataObject databaseRecordDelete = dataRepo.findByUid(postResponse.getUid());
+		DataObject databaseRecordDelete = database.findByUid(postResponse.getUid());
 		assertNull("Database record found despite being deleted", databaseRecordDelete);
 	}
 

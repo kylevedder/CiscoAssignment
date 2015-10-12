@@ -18,13 +18,11 @@ import cisco.assignment.exception.UIDMismatchException;
 import cisco.assignment.exception.UnsupportedMethodException;
 import cisco.assignment.model.ErrorObject;
 
-//https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc
 @ControllerAdvice
 public class ExceptionController {
 
 	private static final Logger logger = Logger.getLogger(InputController.class);
 
-	// http://stackoverflow.com/questions/17201072/using-spring-mvc-accepting-post-requests-with-bad-json-leads-to-a-default-400-e
 	/**
 	 * Handles exception when trying to parse non-JSON payloads as JSON.
 	 * 

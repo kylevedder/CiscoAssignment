@@ -15,7 +15,9 @@ future projects!
 
 Dependencies
 ============
-This project requires JDK 8 and MongoDB to be installed on the server.
+This project requires JDK 8, Maven, and MongoDB to be installed on the 
+build server and it requires JRE 8 and MongoDB to be installed on the 
+release server.
 
 API
 =======

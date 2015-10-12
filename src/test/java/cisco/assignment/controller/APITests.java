@@ -157,7 +157,7 @@ public class APITests {
 		DataObject sampleDataObj = new DataObject(postResponse.getUid(), sampleData);
 
 		// compare against known good
-		assertEquals(postResponse, sampleDataObj);
+		assertEquals("POST response does not match sample response", postResponse, sampleDataObj);
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class APITests {
 		DataObject databaseRecord = dataRepo.findByUid(postResponse.getUid());
 
 		// check that database record matches posted response
-		assertEquals(postResponse, databaseRecord);
+		assertEquals("POST response does not match sample response", postResponse, databaseRecord);
 	}
 
 	/**
@@ -252,7 +252,7 @@ public class APITests {
 		assertNotNull(putResponse.getData());
 
 		// compare against known good
-		assertEquals(putResponse, sampleDataObject);
+		assertEquals("PUT response does not match sample response", putResponse, sampleDataObject);
 	}
 
 	/**
@@ -443,7 +443,7 @@ public class APITests {
 		assertNotNull(getResponse);
 
 		// compare against known good
-		assertEquals(getResponse, sampleResponse);
+		assertEquals("GET listing does not match sample listing", getResponse, sampleResponse);
 	}
 
 	/**
@@ -514,7 +514,7 @@ public class APITests {
 				DataObject.class);
 
 		DataObject databaseRecordDelete = dataRepo.findByUid(postResponse.getUid());
-		assertNull(databaseRecordDelete);
+		assertNull("Database record found despite being deleted", databaseRecordDelete);
 	}
 
 	/**
@@ -533,7 +533,7 @@ public class APITests {
 				new EntryNotFoundException().getMessage());
 
 		assertNotNull(errorResponse);
-		assertEquals(errorResponse, sampleErrorResponse);
+		assertEquals("GET error does not match expected error", errorResponse, sampleErrorResponse);
 	}
 
 	/**
@@ -550,7 +550,7 @@ public class APITests {
 		ErrorObject sampleErrorResponse = new ErrorObject("POST", compoundUrl, new InvalidDataException().getMessage());
 
 		assertNotNull(errorResponse);
-		assertEquals(errorResponse, sampleErrorResponse);
+		assertEquals("POST error does not match expected error", errorResponse, sampleErrorResponse);
 	}
 
 	/**

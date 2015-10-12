@@ -13,6 +13,10 @@ lot of fun working on this project and had my mind blown several times
 by the power of Spring Boot. I will definitely be using Spring Boot in
 future projects!
 
+Dependencies
+============
+This project requires JDK 8 and MongoDB to be installed on the server.
+
 API
 =======
 The API allows for GET, POST, PUT, and DELETE.

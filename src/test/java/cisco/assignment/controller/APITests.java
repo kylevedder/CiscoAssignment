@@ -1,11 +1,9 @@
 package cisco.assignment.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -28,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cisco.assignment.App;
 import cisco.assignment.exception.EntryNotFoundException;
 import cisco.assignment.exception.InvalidDataException;
@@ -43,7 +43,7 @@ import cisco.assignment.util.URLUtils;
 @ComponentScan(basePackages = "cisco.assignment")
 @IntegrationTest("server.port:0")
 @WebAppConfiguration
-public class IntegrationTests {
+public class APITests {
 
 	private URLUtils urlUtils;
 
@@ -55,8 +55,6 @@ public class IntegrationTests {
 
 	@Autowired
 	private DataRepo dataRepo;
-
-	private List<DataObject> starterData;
 
 	String compoundUrl = null;
 
@@ -71,7 +69,7 @@ public class IntegrationTests {
 	 * 
 	 * @return
 	 */
-	private String randomUID() {
+	private String generateRandomUID() {
 		int len = r.nextInt(5) + 15;
 		String uid = "";
 		for (int i = 0; i < len; i++) {
@@ -87,12 +85,26 @@ public class IntegrationTests {
 		return uid;
 	}
 
-	private <S, T> T sendRequest(S sampleData, String url, HttpMethod method, Class<T> clazz) {
+	/**
+	 * Sends a request to the specified URL with the specified payload, using
+	 * the specified method, and returning a specified class.
+	 * 
+	 * Horray for generics!
+	 * 
+	 * @param requestPayload
+	 * @param requestURL
+	 * @param requestMethod
+	 * @param responseClass
+	 * @return
+	 */
+	private <S, T> T sendRequest(S requestPayload, String requestURL, HttpMethod requestMethod,
+			Class<T> responseClass) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
-		HttpEntity<S> requestEntity = new HttpEntity<>(sampleData, headers);
-		ResponseEntity<T> responseEntity = restTemplate.exchange(url, method, requestEntity, clazz);
+		HttpEntity<S> requestEntity = new HttpEntity<>(requestPayload, headers);
+		ResponseEntity<T> responseEntity = restTemplate.exchange(requestURL, requestMethod, requestEntity,
+				responseClass);
 		return responseEntity.getBody();
 	}
 
@@ -117,11 +129,8 @@ public class IntegrationTests {
 	 * @throws Exception
 	 */
 	@Test
-	public void postBasic() throws Exception {
+	public void postCheckResponse() throws Exception {
 
-		// ======
-		// Setup Data
-		// ======
 		Map<String, Object> sampleData = new HashMap<>();
 		sampleData.put("I", "would");
 		sampleData.put("like", "to");
@@ -153,12 +162,12 @@ public class IntegrationTests {
 
 	/**
 	 * Performs a POST and then checks that the response is stored in the
-	 * database with a GET.
+	 * database correctly.
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void postAndGet() throws Exception {
+	public void postCheckDataInsertion() throws Exception {
 
 		// ======
 		// Setup Data
@@ -187,23 +196,21 @@ public class IntegrationTests {
 		assertNotNull(postResponse.getUid());
 		assertNotNull(postResponse.getData());
 
-		// generate compare data
+		// generate sample
 		DataObject sampleDataObj = new DataObject(postResponse.getUid(), sampleData);
 
-		// compare against known good
+		// compare response against sample
 		assertEquals(postResponse, sampleDataObj);
 
 		// ======
-		// Check GET
+		// Check database
 		// ======
-		HttpHeaders getHeaders = new HttpHeaders();
-		getHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-		DataObject getResponse = sendRequest(sampleData, urlUtils.appendURI(compoundUrl, postResponse.getUid()),
-				HttpMethod.GET, DataObject.class);
+		// pull data from database
+		DataObject databaseRecord = dataRepo.findByUid(postResponse.getUid());
 
-		// check to see if request from database is same as the data POSTed
-		assertEquals(postResponse, getResponse);
+		// check that database record matches posted response
+		assertEquals(postResponse, databaseRecord);
 	}
 
 	/**
@@ -218,7 +225,7 @@ public class IntegrationTests {
 		// Setup Data
 		// ======
 
-		String sampleUID = randomUID();
+		String sampleUID = generateRandomUID();
 		Map<String, Object> sampleData = new HashMap<>();
 		sampleData.put("I", "would");
 		sampleData.put("like", "to");
@@ -231,7 +238,7 @@ public class IntegrationTests {
 		DataObject sampleDataObject = new DataObject(sampleUID, sampleData);
 
 		// ======
-		// Setup PUT
+		// Send PUT
 		// ======
 
 		DataObject putResponse = sendRequest(sampleDataObject, urlUtils.appendURI(compoundUrl, sampleUID),
@@ -240,7 +247,6 @@ public class IntegrationTests {
 		// ======
 		// Check PUT
 		// ======
-		// got a response
 		assertNotNull(putResponse);
 		assertNotNull(putResponse.getUid());
 		assertNotNull(putResponse.getData());
@@ -250,7 +256,7 @@ public class IntegrationTests {
 	}
 
 	/**
-	 * Performs a PUT and then checks that the response from GET is the same.
+	 * Performs a PUT and then checks that the data in the database is the same.
 	 * 
 	 * @throws Exception
 	 */
@@ -261,7 +267,7 @@ public class IntegrationTests {
 		// Setup Data
 		// ======
 
-		String sampleUID = randomUID();
+		String sampleUID = generateRandomUID();
 		Map<String, Object> sampleData = new HashMap<>();
 		sampleData.put("I", "would");
 		sampleData.put("like", "to");
@@ -274,7 +280,7 @@ public class IntegrationTests {
 		DataObject sampleDataObject = new DataObject(sampleUID, sampleData);
 
 		// ======
-		// Setup PUT
+		// Send PUT
 		// ======
 
 		DataObject putResponse = sendRequest(sampleDataObject, urlUtils.appendURI(compoundUrl, sampleUID),
@@ -290,16 +296,15 @@ public class IntegrationTests {
 		assertNotNull(putResponse.getData());
 
 		// compare against known good
-		assertEquals(putResponse, sampleDataObject);
+		assertEquals("PUT response does not match the expected response", putResponse, sampleDataObject);
 
 		// ======
-		// Check with GET from database
+		// Check in database
 		// ======
+		DataObject databaseRecord = dataRepo.findByUid(sampleUID);
 
-		DataObject getResponse = sendRequest("", urlUtils.appendURI(compoundUrl, sampleUID), HttpMethod.GET,
-				DataObject.class);
-
-		assertEquals(sampleDataObject, getResponse);
+		// compare put
+		assertEquals("PUT response does not match the database record", putResponse, databaseRecord);
 	}
 
 	/**
@@ -314,7 +319,7 @@ public class IntegrationTests {
 		// Setup Data
 		// ======
 
-		String sampleUID = randomUID();
+		String sampleUID = generateRandomUID();
 		Map<String, Object> sampleData = new HashMap<>();
 		sampleData.put("I", "would");
 		sampleData.put("like", "to");
@@ -348,12 +353,53 @@ public class IntegrationTests {
 		assertNotNull(putResponse2.getData());
 
 		// compare against known good
-		assertEquals(putResponse1, sampleDataObject);
-		assertEquals(putResponse1, putResponse2);
+		assertEquals("PUT response does not match sample response", putResponse1, sampleDataObject);
+		assertEquals("PUT is not idempotent", putResponse1, putResponse2);
 	}
 
 	/**
-	 * Tests that GET of all URLs works
+	 * Performs a PUT and then checks that the response is the same.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void deleteTest() throws Exception {
+
+		// ======
+		// Setup Data
+		// ======
+
+		String sampleUID = generateRandomUID();
+		Map<String, Object> sampleData = new HashMap<>();
+		sampleData.put("I", "would");
+		sampleData.put("like", "to");
+
+		Map<String, Object> sampleDataSub = new HashMap<>();
+		sampleDataSub.put("work", "for");
+		sampleDataSub.put("Cisco", "StartUp");
+		sampleData.put("please", sampleDataSub);
+
+		DataObject sampleDataObject = new DataObject(sampleUID, sampleData);
+
+		dataRepo.save(sampleDataObject);
+		// ======
+		// Send PUT
+		// ======
+
+		sendRequest(sampleDataObject, urlUtils.appendURI(compoundUrl, sampleUID), HttpMethod.DELETE, DataObject.class);
+
+		// ======
+		// Check PUT
+		// ======
+
+		DataObject databaseRecord = dataRepo.findByUid(sampleUID);
+
+		assertNull("Database still holds UID", databaseRecord);
+	}
+
+	/**
+	 * Tests that GET of all URLs works by populating database with data and
+	 * then GETing.
 	 * 
 	 * @throws Exception
 	 */
@@ -372,21 +418,20 @@ public class IntegrationTests {
 		sampleDataSub.put("Cisco", "StartUp");
 		sampleData.put("please", sampleDataSub);
 
-		DataObject s1 = new DataObject(randomUID(), sampleData);
-		DataObject s2 = new DataObject(randomUID(), sampleData);
-		DataObject s3 = new DataObject(randomUID(), sampleData);
+		DataObject s1 = new DataObject(generateRandomUID(), sampleData);
+		DataObject s2 = new DataObject(generateRandomUID(), sampleData);
+		DataObject s3 = new DataObject(generateRandomUID(), sampleData);
 
-		List<String> urls = Arrays.asList(urlUtils.appendURI(compoundUrl, s1.getUid()),
-				urlUtils.appendURI(compoundUrl, s2.getUid()), urlUtils.appendURI(compoundUrl, s3.getUid()));
+		URLListObject sampleResponse = new URLListObject(Arrays.asList(urlUtils.appendURI(compoundUrl, s1.getUid()),
+				urlUtils.appendURI(compoundUrl, s2.getUid()), urlUtils.appendURI(compoundUrl, s3.getUid())));
 
-		URLListObject sampleResponse = new URLListObject(urls);
-
-		sendRequest(s1, urlUtils.appendURI(compoundUrl, s1.getUid()), HttpMethod.PUT, DataObject.class);
-		sendRequest(s2, urlUtils.appendURI(compoundUrl, s2.getUid()), HttpMethod.PUT, DataObject.class);
-		sendRequest(s3, urlUtils.appendURI(compoundUrl, s3.getUid()), HttpMethod.PUT, DataObject.class);
+		// populate database with items
+		dataRepo.save(s1);
+		dataRepo.save(s2);
+		dataRepo.save(s3);
 
 		// ======
-		// Setup GET
+		// Send GET
 		// ======
 		URLListObject getResponse = sendRequest(s3, compoundUrl, HttpMethod.GET, URLListObject.class);
 
@@ -402,13 +447,13 @@ public class IntegrationTests {
 	}
 
 	/**
-	 * Performs a PUT, DELETEs the PUT entity, and then GETs the deleted entity
-	 * to ensure the entity doesn't exist.
+	 * Performs a POST, then PUT, then GET, then DELETEs the entity, each time
+	 * polling the database to ensure the data is there.
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void putDeleteGet() throws Exception {
+	public void fullLoopTest() throws Exception {
 
 		// ======
 		// Setup Data
@@ -422,30 +467,54 @@ public class IntegrationTests {
 		sampleDataSub.put("Cisco", "StartUp");
 		sampleData.put("please", sampleDataSub);
 
-		DataObject sampleDataObject = new DataObject(randomUID(), sampleData);
+		// ======
+		// POST Data
+		// ======
+		DataObject postResponse = sendRequest(sampleData, compoundUrl, HttpMethod.POST, DataObject.class);
 
-		DataObject putResponse = sendRequest(sampleDataObject,
-				urlUtils.appendURI(compoundUrl, sampleDataObject.getUid()), HttpMethod.PUT, DataObject.class);
+		assertNotNull("POST returned null response", postResponse);
+		assertNotNull("POST response uid is null", postResponse.getUid());
 
-		assertNotNull(putResponse);
+		DataObject databaseRecordPost = dataRepo.findByUid(postResponse.getUid());
+
+		assertEquals("Record in database does not match the record returned by POST.", postResponse,
+				databaseRecordPost);
 
 		// ======
-		// Delete
+		// PUT Data
+		// ======
+		DataObject samplePayload = new DataObject(postResponse.getUid(), sampleData);
+		DataObject putResponse = sendRequest(samplePayload, urlUtils.appendURI(compoundUrl, postResponse.getUid()),
+				HttpMethod.PUT, DataObject.class);
+
+		DataObject databaseRecordPut = dataRepo.findByUid(postResponse.getUid());
+
+		assertNotNull("PUT response was null", putResponse);
+		assertEquals("PUT response not as expected", putResponse, samplePayload);
+		assertEquals("PUT response does not match database", putResponse, databaseRecordPut);
+
+		// ======
+		// GET Data
 		// ======
 
-		sendRequest(sampleDataObject, urlUtils.appendURI(compoundUrl, sampleDataObject.getUid()), HttpMethod.DELETE,
+		DataObject getResponse = sendRequest("", urlUtils.appendURI(compoundUrl, postResponse.getUid()), HttpMethod.GET,
 				DataObject.class);
 
-		ErrorObject errorResponse = sendRequest(sampleDataObject,
-				urlUtils.appendURI(compoundUrl, sampleDataObject.getUid()), HttpMethod.GET, ErrorObject.class);
+		DataObject databaseRecordGet = dataRepo.findByUid(postResponse.getUid());
 
-		assertNotNull(errorResponse);
+		assertNotNull("PUT response was null", getResponse);
+		assertEquals("PUT response not as expected", getResponse, samplePayload);
+		assertEquals("PUT response does not match database", getResponse, databaseRecordGet);
 
-		ErrorObject sampleErrorResponse = new ErrorObject("GET",
-				urlUtils.appendURI(compoundUrl, sampleDataObject.getUid()), new EntryNotFoundException().getMessage());
+		// ======
+		// DELETE Data
+		// ======
 
-		assertEquals(errorResponse, sampleErrorResponse);
+		sendRequest(samplePayload, urlUtils.appendURI(compoundUrl, samplePayload.getUid()), HttpMethod.DELETE,
+				DataObject.class);
 
+		DataObject databaseRecordDelete = dataRepo.findByUid(postResponse.getUid());
+		assertNull(databaseRecordDelete);
 	}
 
 	/**
@@ -456,7 +525,7 @@ public class IntegrationTests {
 	@Test
 	public void errorGet() throws Exception {
 
-		String uid = randomUID();
+		String uid = generateRandomUID();
 		ErrorObject errorResponse = sendRequest("", urlUtils.appendURI(compoundUrl, uid), HttpMethod.GET,
 				ErrorObject.class);
 
@@ -469,12 +538,13 @@ public class IntegrationTests {
 
 	/**
 	 * POSTs empty payload to ensure it throws an appropriate error.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void errorPost() throws Exception {
 
-		String uid = randomUID();
+		String uid = generateRandomUID();
 		ErrorObject errorResponse = sendRequest("", compoundUrl, HttpMethod.POST, ErrorObject.class);
 
 		ErrorObject sampleErrorResponse = new ErrorObject("POST", compoundUrl, new InvalidDataException().getMessage());
@@ -484,13 +554,15 @@ public class IntegrationTests {
 	}
 
 	/**
-	 * GETs, POSTs, and DELETEs to invalid URIs to ensure it throws an appropriate error.
+	 * GETs, POSTs, and DELETEs to invalid URIs to ensure it throws an
+	 * appropriate error.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void errorBadURI() throws Exception {
 
-		String randomURL = urlUtils.appendURI(baseUrl, randomUID());
+		String randomURL = urlUtils.appendURI(baseUrl, generateRandomUID());
 		ErrorObject getResponse = sendRequest("", randomURL, HttpMethod.GET, ErrorObject.class);
 		ErrorObject postResponse = sendRequest("", randomURL, HttpMethod.POST, ErrorObject.class);
 		ErrorObject deleteResponse = sendRequest("", randomURL, HttpMethod.DELETE, ErrorObject.class);
@@ -503,9 +575,9 @@ public class IntegrationTests {
 		assertNotNull(postResponse);
 		assertNotNull(deleteResponse);
 
-		assertEquals(getResponse, sampleGetResponse);
-		assertEquals(postResponse, samplePostResponse);
-		assertEquals(deleteResponse, sampleDeleteResponse);
+		assertEquals("GET response does not match sample response", getResponse, sampleGetResponse);
+		assertEquals("POST response does not match sample response", postResponse, samplePostResponse);
+		assertEquals("DELETE response does not match sample response", deleteResponse, sampleDeleteResponse);
 	}
 
 }

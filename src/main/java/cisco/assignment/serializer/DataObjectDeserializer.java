@@ -26,9 +26,10 @@ public class DataObjectDeserializer extends JsonDeserializer<DataObject> {
 	@Override
 	public DataObject deserialize(JsonParser jp, DeserializationContext ctxt)
 			throws IOException, JsonProcessingException {
-		// gets a map of data as String, Object map
+		// gets a map of data as <String, Object> map
 		Map<String, Object> dataMap = jp.readValueAs(new TypeReference<Map<String, Object>>() {
 		});
+				
 		Object uidVal = dataMap.remove("uid");
 		if (uidVal == null || !(uidVal instanceof String)) {
 			throw new InvalidDataException();

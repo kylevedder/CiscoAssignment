@@ -9,6 +9,13 @@ import org.springframework.context.annotation.ComponentScan;
 //kvedder@umass.edu
 //Resume: http://people.umass.edu/kvedder/resume
 
+/**
+ * Main app, launches the application and points Spring to the appropriate
+ * packages to scan.
+ * 
+ * @author kyle
+ *
+ */
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan(basePackages = "cisco.assignment")

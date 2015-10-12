@@ -24,6 +24,12 @@ public class SerializerTest {
 		objMapper = new ObjectMapper();
 	}
 
+	/**
+	 * Serializes and deserializes a {@link DataObject} and then compares the two
+	 * {@link DataObject}s
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testDataObject() throws Exception {
 		String uid = "sampleuid";
@@ -35,33 +41,36 @@ public class SerializerTest {
 		sampleDataSub.put("work", "for");
 		sampleDataSub.put("Cisco", "StartUp");
 		sampleData.put("please", sampleDataSub);
-		
 
 		DataObject dataObject = new DataObject(uid, sampleData);
 
-		//serialize
+		// serialize
 		String deserializedString = objMapper.writeValueAsString(dataObject);
-		//deserialize
+		// deserialize
 		DataObject reformedDataObject = objMapper.readValue(deserializedString, DataObject.class);
 
 		assertEquals(dataObject, reformedDataObject);
 
 	}
-	
+
+	/**
+	 * Serializes and deserializes a {@link URLListObject} and then compares the two {@link URLListObject}s
+	 * @throws Exception
+	 */
 	@Test
 	public void testURLListObject() throws Exception {
-		
+
 		List<String> urls = Arrays.asList("I", "want", "to", "work", "for", "Cisco", "Startup");
-		
+
 		URLListObject urlList = new URLListObject(urls);
 
-		//serialize
+		// serialize
 		String deserializedString = objMapper.writeValueAsString(urlList);
-		//deserialize
+		// deserialize
 		URLListObject reformedUrlList = objMapper.readValue(deserializedString, URLListObject.class);
 
 		assertEquals(urlList, reformedUrlList);
 
 	}
-	
+
 }

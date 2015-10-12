@@ -8,6 +8,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cisco.assignment.serializer.URLListObjectDeserializer;
 import cisco.assignment.serializer.URLListObjectSerializer;
 
+/**
+ * Serializeable/Deserializeable object that stores list of all entry URLs.
+ * 
+ * Uses custom serializer/deserializer
+ * 
+ * @author kyle
+ *
+ */
 @JsonDeserialize(using = URLListObjectDeserializer.class)
 @JsonSerialize(using = URLListObjectSerializer.class)
 public class URLListObject {

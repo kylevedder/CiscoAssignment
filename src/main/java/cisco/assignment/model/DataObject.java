@@ -10,6 +10,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import cisco.assignment.serializer.DataObjectDeserializer;
 import cisco.assignment.serializer.DataObjectSerializer;
 
+/**
+ * Serializeable/Deserializeable object that stores arbitrary nested data.
+ * 
+ * Uses custom serializer/deserializer
+ * 
+ * @author kyle
+ *
+ */
 @JsonDeserialize(using = DataObjectDeserializer.class)
 @JsonSerialize(using = DataObjectSerializer.class)
 public class DataObject {

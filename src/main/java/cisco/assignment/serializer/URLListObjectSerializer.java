@@ -9,6 +9,15 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import cisco.assignment.model.URLListObject;
 
+
+/**
+ * Serializes {@link URLListObject} to JSON.
+ * 
+ * Referenced in annotation of {@link URLListObject}.
+ * 
+ * @author kyle
+ *
+ */
 public class URLListObjectSerializer extends JsonSerializer<URLListObject> {
 	@Override
 	public void serialize(URLListObject urlListObj, JsonGenerator jgen, SerializerProvider provider)

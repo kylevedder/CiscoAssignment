@@ -3,19 +3,25 @@ package cisco.assignment.serializer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import cisco.assignment.exception.InvalidDataException;
+import cisco.assignment.model.DataObject;
 import cisco.assignment.model.URLListObject;
 
+/**
+ * Deserializes JSON to {@link URLListObject}.
+ * 
+ * Referenced in annotation of {@link URLListObject}.
+ * 
+ * @author kyle
+ *
+ */
 public class URLListObjectDeserializer extends JsonDeserializer<URLListObject> {
 
 	@Override

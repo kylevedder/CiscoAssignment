@@ -12,7 +12,16 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import cisco.assignment.exception.InvalidDataException;
 import cisco.assignment.model.DataObject;
 
+/**
+ * Deserializes JSON to {@link DataObject}.
+ * 
+ * Referenced in annotation of {@link DataObject}.
+ * 
+ * @author kyle
+ *
+ */
 public class DataObjectDeserializer extends JsonDeserializer<DataObject> {
+
 
 	@Override
 	public DataObject deserialize(JsonParser jp, DeserializationContext ctxt)
@@ -28,15 +37,4 @@ public class DataObjectDeserializer extends JsonDeserializer<DataObject> {
 
 		return new DataObject(uid, dataMap);
 	}
-	// @Override
-	// public void serialize(DataObject dataObj, JsonGenerator jgen,
-	// SerializerProvider provider)
-	// throws IOException, JsonProcessingException {
-	// jgen.writeStartObject();
-	// jgen.writeStringField("uid", String.valueOf(dataObj.getUid()));
-	// for (Entry<String, Object> entry : dataObj.getData().entrySet()) {
-	// jgen.writeObjectField(entry.getKey(), entry.getValue());
-	// }
-	// jgen.writeEndObject();
-	// }
 }

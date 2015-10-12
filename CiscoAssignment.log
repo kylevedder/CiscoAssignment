@@ -6772,3 +6772,4 @@ cisco.assignment.exception.InvalidDataException: Not a JSON Object
 2015-10-11 18:45:55.951 ERROR 7980 --- [http-nio-auto-1-exec-8] c.assignment.controller.InputController  : GET: Entry not found
 2015-10-11 18:45:55.969 DEBUG 7980 --- [http-nio-auto-1-exec-9] c.assignment.controller.InputController  : PUT: Add new entry with uid "JwKTaUGE0vELQmXD"
 2015-10-11 18:45:55.988 DEBUG 7980 --- [http-nio-auto-1-exec-10] c.assignment.controller.InputController  : POST: Create new entry
+2015-10-11 19:45:19.468 ERROR 32049 --- [http-nio-8080-exec-5] c.assignment.controller.InputController  : DELETE: Invalid URI requested

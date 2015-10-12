@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +28,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import cisco.assignment.App;
 import cisco.assignment.exception.EntryNotFoundException;
 import cisco.assignment.exception.InvalidDataException;
@@ -46,7 +45,6 @@ import cisco.assignment.util.URLUtils;
 @WebAppConfiguration
 public class IntegrationTests {
 
-	@Autowired
 	private URLUtils urlUtils;
 
 	@Value("${local.server.port}")
@@ -100,12 +98,24 @@ public class IntegrationTests {
 
 	@Before
 	public void setup() {
+		urlUtils = new URLUtils();
 		baseUrl = "http://localhost:" + port + "/";
 		r = new Random(System.currentTimeMillis());
 		compoundUrl = urlUtils.appendURI(baseUrl, apiuri);
 		dataRepo.deleteAll();
 	}
 
+	@After
+	public void teardown() {
+		dataRepo.deleteAll();
+	}
+
+	/**
+	 * Performs a POST and then checks that the response is the same, but with a
+	 * "uid" field
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void postBasic() throws Exception {
 
@@ -141,6 +151,12 @@ public class IntegrationTests {
 		assertEquals(postResponse, sampleDataObj);
 	}
 
+	/**
+	 * Performs a POST and then checks that the response is stored in the
+	 * database with a GET.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void postAndGet() throws Exception {
 
@@ -190,6 +206,11 @@ public class IntegrationTests {
 		assertEquals(postResponse, getResponse);
 	}
 
+	/**
+	 * Performs a PUT and then checks that the response is the same.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void putBasic() throws Exception {
 
@@ -228,6 +249,11 @@ public class IntegrationTests {
 		assertEquals(putResponse, sampleDataObject);
 	}
 
+	/**
+	 * Performs a PUT and then checks that the response from GET is the same.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void putAndGet() throws Exception {
 
@@ -270,12 +296,17 @@ public class IntegrationTests {
 		// Check with GET from database
 		// ======
 
-		DataObject getResponse = sendRequest(sampleDataObject, urlUtils.appendURI(compoundUrl, sampleUID),
-				HttpMethod.PUT, DataObject.class);
+		DataObject getResponse = sendRequest("", urlUtils.appendURI(compoundUrl, sampleUID), HttpMethod.GET,
+				DataObject.class);
 
 		assertEquals(sampleDataObject, getResponse);
 	}
 
+	/**
+	 * Tests that PUT is idempotent.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void putIdempotent() throws Exception {
 
@@ -321,6 +352,11 @@ public class IntegrationTests {
 		assertEquals(putResponse1, putResponse2);
 	}
 
+	/**
+	 * Tests that GET of all URLs works
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void getAll() throws Exception {
 		// ======
@@ -365,6 +401,12 @@ public class IntegrationTests {
 		assertEquals(getResponse, sampleResponse);
 	}
 
+	/**
+	 * Performs a PUT, DELETEs the PUT entity, and then GETs the deleted entity
+	 * to ensure the entity doesn't exist.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void putDeleteGet() throws Exception {
 
@@ -406,6 +448,11 @@ public class IntegrationTests {
 
 	}
 
+	/**
+	 * GETs a non-existent entity to ensure it throws an appropriate error.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void errorGet() throws Exception {
 
@@ -420,6 +467,10 @@ public class IntegrationTests {
 		assertEquals(errorResponse, sampleErrorResponse);
 	}
 
+	/**
+	 * POSTs empty payload to ensure it throws an appropriate error.
+	 * @throws Exception
+	 */
 	@Test
 	public void errorPost() throws Exception {
 
@@ -432,6 +483,10 @@ public class IntegrationTests {
 		assertEquals(errorResponse, sampleErrorResponse);
 	}
 
+	/**
+	 * GETs, POSTs, and DELETEs to invalid URIs to ensure it throws an appropriate error.
+	 * @throws Exception
+	 */
 	@Test
 	public void errorBadURI() throws Exception {
 

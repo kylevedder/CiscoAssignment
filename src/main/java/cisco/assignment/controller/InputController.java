@@ -35,12 +35,44 @@ public class InputController {
 	@Autowired
 	private URLUtils urlUtils;
 
+	/**
+	 * Maps POSTs from the ${api-uri} to insert payload as a new entry.
+	 * 
+	 * If payload is valid JSON, returns the payload along with a "uid" field
+	 * detailing the unique id for that payload.
+	 * 
+	 * If payload is valid JSON, Returns error payload.
+	 * 
+	 * @param data
+	 *            Map of all nested data in key-value form, pulled out of the
+	 *            POSTed JSON by Spring
+	 * @return Initial POSTed payload along with a "uid" field detailing the
+	 *         unique id or error payload
+	 */
 	@RequestMapping(value = "${api-uri}", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public DataObject post(@RequestBody Map<String, Object> data) {
 		logger.debug("POST: Create new entry");
 		return dataRepo.insert(new DataObject(data));
 	}
 
+	/**
+	 * Maps PUTs from the ${api-uri}/{uid} to insert payload as an entry with
+	 * the given "uid".
+	 * 
+	 * Will overwrite existing entry at the given "uid" if one exists.
+	 * 
+	 * If valid JSON, returns PUTed payload.
+	 * 
+	 * If invalid JSON or if "uid" in PUTed payload does not match the "uid" in
+	 * the URI, returns error payload.
+	 * 
+	 * @param uid
+	 *            "uid" from the passed URI
+	 * @param data
+	 *            Map of all nested data in key-value form, pulled out of the
+	 *            PUTed JSON by Spring
+	 * @returnInitial PUTed payload or error payload
+	 */
 	@RequestMapping(value = "${api-uri}/{uid}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	public DataObject put(@PathVariable String uid, @RequestBody Map<String, Object> data) {
 		logger.debug("PUT: Add new entry with uid \"" + uid + "\"");
@@ -51,6 +83,17 @@ public class InputController {
 		return dataRepo.save(new DataObject(uid, data));
 	}
 
+	/**
+	 * Maps GETs from the ${api-uri}/{uid} to pull entry at the given "uid".
+	 * 
+	 * If entry with the given "uid" exists, returns that entry.
+	 * 
+	 * If entry with the given "uid" is missing, throws an exception.
+	 * 
+	 * @param uid
+	 *            "uid" of the entry to return
+	 * @return Entry with requested "uid" or error payload from exception
+	 */
 	@RequestMapping(value = "${api-uri}/{uid}", method = RequestMethod.GET, produces = "application/json")
 	public DataObject get(@PathVariable String uid) {
 		logger.debug("GET: Getting entry with uid \"" + uid + "\"");
@@ -62,6 +105,15 @@ public class InputController {
 		return dataObject;
 	}
 
+	/**
+	 * Maps GETs from the ${api-uri} to list all entry URLs
+	 * 
+	 * Returns a payload of an array of all entry URLs
+	 * 
+	 * @param request
+	 * 
+	 * @return Payload of all entry URLs
+	 */
 	@RequestMapping(value = "${api-uri}", method = RequestMethod.GET, produces = "application/json")
 	public URLListObject getAll(HttpServletRequest request) {
 		logger.debug("GET: List unique entries");
@@ -73,6 +125,18 @@ public class InputController {
 		return new URLListObject(urls);
 	}
 
+	/**
+	 * Maps GETs from the ${api-uri}/{uid} delete the entry with the specified
+	 * uid.
+	 * 
+	 * If entry with the given "uid" exists, deletes the entry and returns
+	 * nothing.
+	 * 
+	 * if entry with the given "uid" doesn't exist, throws an exception.
+	 * 
+	 * @param uid
+	 *            "uid" of the entry to delete
+	 */
 	@RequestMapping(value = "${api-uri}/{uid}", method = RequestMethod.DELETE)
 	public void delete(@PathVariable String uid) {
 		logger.debug("DELETE: Deleting entry with uid \"" + uid + "\"");
@@ -83,6 +147,18 @@ public class InputController {
 		dataRepo.delete(uid);
 	}
 
+	/**
+	 * Maps all requests not captured by other handlers to an appropriate
+	 * exception.
+	 * 
+	 * If GET, POST, DELETE, or PUT, throws an InvalidURIException, otherwise
+	 * throws an UnsupportedMethodException.
+	 * 
+	 * @param request
+	 *            HTTP Request object
+	 * @param response
+	 *            HTTP Response object
+	 */
 	@RequestMapping(method = {})
 	public void unmappedOperations(HttpServletRequest request, HttpServletResponse response) {
 		switch (request.getMethod().toUpperCase()) {

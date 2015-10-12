@@ -10,7 +10,14 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import cisco.assignment.model.DataObject;
 
-
+/**
+ * Serializes DataObject to JSON.
+ * 
+ * Referenced in annotation of {@link DataObject}.
+ * 
+ * @author kyle
+ *
+ */
 public class DataObjectSerializer  extends JsonSerializer<DataObject> {
 	@Override
 	public void serialize(DataObject dataObj, JsonGenerator jgen, SerializerProvider provider)

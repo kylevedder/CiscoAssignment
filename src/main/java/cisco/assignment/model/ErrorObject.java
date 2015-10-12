@@ -1,5 +1,13 @@
 package cisco.assignment.model;
 
+/**
+ * Serializeable/Deserializeable object that stores an error payload.
+ * 
+ * Uses default serializer/deserializer
+ * 
+ * @author kyle
+ *
+ */
 public class ErrorObject {
 	private String verb;
 	private String url;

@@ -8,7 +8,7 @@ to allow students to demonstrate their technical skills.
 
 I took this opportunity to use a framework I have never used before: 
 [Spring Boot](http://projects.spring.io/spring-boot/). I spent a lot 
-of my time on this project familiarizing myself with Spring. I had a 
+of my time on this project familiarizing myself with Spring Boot. I had a 
 lot of fun working on this project and had my mind blown several times 
 by the power of Spring Boot. I will definitely be using Spring Boot in
 future projects!

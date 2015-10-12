@@ -10,7 +10,9 @@ public class URLUtils {
 	 * and trailing slashes.
 	 * 
 	 * @param url
+	 *            Base URL
 	 * @param uri
+	 *            URI to append
 	 * @return
 	 */
 	public String appendURI(String url, String uri) {

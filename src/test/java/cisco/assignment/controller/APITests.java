@@ -63,51 +63,6 @@ public class APITests {
 
 	private Random r = null;
 
-	/**
-	 * Generates a random UID of upper case letters, lower case letters, and
-	 * nums.
-	 * 
-	 * @return
-	 */
-	private String generateRandomUID() {
-		int len = r.nextInt(5) + 15;
-		String uid = "";
-		for (int i = 0; i < len; i++) {
-			int rand = r.nextInt(26 * 2 + 10);
-			if (rand < 10) {// nums 0 thru 9
-				uid += String.valueOf(rand);
-			} else if (rand < 26 + 10) {// a thru z
-				uid += String.valueOf((char) ('a' + (rand - 10)));
-			} else if (rand < 26 * 2 + 10) {// A thru Z
-				uid += String.valueOf((char) ('A' + (rand - 36)));
-			}
-		}
-		return uid;
-	}
-
-	/**
-	 * Sends a request to the specified URL with the specified payload, using
-	 * the specified method, and returning a specified class.
-	 * 
-	 * Horray for generics!
-	 * 
-	 * @param requestPayload
-	 * @param requestURL
-	 * @param requestMethod
-	 * @param responseClass
-	 * @return
-	 */
-	private <S, T> T sendRequest(S requestPayload, String requestURL, HttpMethod requestMethod,
-			Class<T> responseClass) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<S> requestEntity = new HttpEntity<>(requestPayload, headers);
-		ResponseEntity<T> responseEntity = restTemplate.exchange(requestURL, requestMethod, requestEntity,
-				responseClass);
-		return responseEntity.getBody();
-	}
-
 	@Before
 	public void setup() {
 		urlUtils = new URLUtils();
@@ -578,6 +533,51 @@ public class APITests {
 		assertEquals("GET response does not match sample response", getResponse, sampleGetResponse);
 		assertEquals("POST response does not match sample response", postResponse, samplePostResponse);
 		assertEquals("DELETE response does not match sample response", deleteResponse, sampleDeleteResponse);
+	}
+	
+	/**
+	 * Generates a random UID of upper case letters, lower case letters, and
+	 * nums.
+	 * 
+	 * @return
+	 */
+	private String generateRandomUID() {
+		int len = r.nextInt(5) + 15;
+		String uid = "";
+		for (int i = 0; i < len; i++) {
+			int rand = r.nextInt(26 * 2 + 10);
+			if (rand < 10) {// nums 0 thru 9
+				uid += String.valueOf(rand);
+			} else if (rand < 26 + 10) {// a thru z
+				uid += String.valueOf((char) ('a' + (rand - 10)));
+			} else if (rand < 26 * 2 + 10) {// A thru Z
+				uid += String.valueOf((char) ('A' + (rand - 36)));
+			}
+		}
+		return uid;
+	}
+
+	/**
+	 * Sends a request to the specified URL with the specified payload, using
+	 * the specified method, and returning a specified class.
+	 * 
+	 * Horray for generics!
+	 * 
+	 * @param requestPayload
+	 * @param requestURL
+	 * @param requestMethod
+	 * @param responseClass
+	 * @return
+	 */
+	private <S, T> T sendRequest(S requestPayload, String requestURL, HttpMethod requestMethod,
+			Class<T> responseClass) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<S> requestEntity = new HttpEntity<>(requestPayload, headers);
+		ResponseEntity<T> responseEntity = restTemplate.exchange(requestURL, requestMethod, requestEntity,
+				responseClass);
+		return responseEntity.getBody();
 	}
 
 }

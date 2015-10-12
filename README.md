@@ -19,9 +19,11 @@ This project requires JDK 8, Maven, and MongoDB to be installed on the
 build server and it requires JRE 8 and MongoDB to be installed on the 
 release server.
 
-Building
+Building / Running
 ============
 To build, execute the "buildScript.sh" shell script.
+
+To run, execute the "assignment-<version>.jar" JAR file in the "/target" directory.
 
 API
 =======

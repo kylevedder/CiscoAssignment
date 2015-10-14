@@ -314,6 +314,44 @@ public class APITests {
 		assertEquals("PUT is not idempotent", putResponse1, putResponse2);
 	}
 
+	@Test
+	public void deleteIdempotent() throws Exception {
+
+		// ======
+		// Setup Data
+		// ======
+
+		String sampleUID = generateRandomUID();
+		Map<String, Object> sampleData = new HashMap<>();
+		sampleData.put("I", "would");
+		sampleData.put("like", "to");
+
+		Map<String, Object> sampleDataSub = new HashMap<>();
+		sampleDataSub.put("work", "for");
+		sampleDataSub.put("Cisco", "StartUp");
+		sampleData.put("please", sampleDataSub);
+
+		DataObject sampleDataObject = new DataObject(sampleUID, sampleData);
+
+		DataObject putResponse = sendRequest(sampleDataObject, urlUtils.appendURI(compoundUrl, sampleUID),
+				HttpMethod.PUT, DataObject.class);
+
+		assertNotNull("PUTing sample data failed", putResponse);
+		// ======
+		// Execute DELETEs
+		// ======
+		Object deleteResponseExist = sendRequest("", urlUtils.appendURI(compoundUrl, sampleUID), HttpMethod.DELETE,
+				Object.class);
+		Object deleteResponseNotExist = sendRequest("", urlUtils.appendURI(compoundUrl, sampleUID), HttpMethod.DELETE,
+				Object.class);
+
+		// ======
+		// Check DELETEs
+		// ======
+
+		assertEquals("DELETEs are not idempotent", deleteResponseExist, deleteResponseNotExist);
+	}
+
 	/**
 	 * Performs a PUT and then checks that the response is the same.
 	 * 
@@ -536,7 +574,7 @@ public class APITests {
 		assertEquals("POST response does not match sample response", postResponse, samplePostResponse);
 		assertEquals("DELETE response does not match sample response", deleteResponse, sampleDeleteResponse);
 	}
-	
+
 	/**
 	 * Generates a random UID of upper case letters, lower case letters, and
 	 * nums.

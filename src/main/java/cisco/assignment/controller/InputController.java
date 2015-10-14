@@ -136,10 +136,6 @@ public class InputController {
 	@RequestMapping(value = "${api-uri}/{uid}", method = RequestMethod.DELETE)
 	public void delete(@PathVariable String uid) {
 		logger.debug("DELETE: Deleting entry with uid \"" + uid + "\"");
-		if (database.findByUid(uid) == null) {
-			logger.error("DELETE: Requested UID \"" + uid + "\" not found!");
-			throw new EntryNotFoundException();
-		}
 		database.delete(uid);
 	}
 

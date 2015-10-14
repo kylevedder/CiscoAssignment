@@ -4,7 +4,7 @@
 
 	<groupId>cisco</groupId>
 	<artifactId>assignment</artifactId>
-	<version>1.0.0-RELEASE</version>
+	<version>1.0.1-RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>assignment</name>

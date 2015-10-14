@@ -28,6 +28,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import cisco.assignment.App;
 import cisco.assignment.database.Database;
 import cisco.assignment.exception.EntryNotFoundException;

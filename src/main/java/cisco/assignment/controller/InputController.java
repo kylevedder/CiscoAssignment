@@ -74,14 +74,8 @@ public class InputController {
 	 */
 	@RequestMapping(value = "${api-uri}/{uid}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	public DataObject put(@PathVariable String uid, @RequestBody Map<String, Object> data) {
-		logger.debug("PUT: Add new entry with uid \"" + uid + "\"");
-		// Checks that the uid of the URL is the same as the uid in the map
-		// Has the intended side effect of also removing the uid from the
-		// dataset, which is desired for proper serialization
-		if (!data.remove("uid", uid)) {
-			logger.error("PUT: Mismatch in entry UIDs");
-			throw new UIDMismatchException();
-		}
+		logger.debug("PUT: Add new entry with uid \"" + uid + "\"");		
+		data.remove("uid", uid);
 		return database.save(new DataObject(uid, data));
 	}
 

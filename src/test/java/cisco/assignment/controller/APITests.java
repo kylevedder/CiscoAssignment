@@ -315,6 +315,37 @@ public class APITests {
 	}
 
 	@Test
+	public void putNoUID() throws Exception {
+
+		// ======
+		// Setup Data
+		// ======
+
+		String sampleUID = generateRandomUID();
+		Map<String, Object> sampleData = new HashMap<>();
+		sampleData.put("I", "would");
+		sampleData.put("like", "to");
+
+		Map<String, Object> sampleDataSub = new HashMap<>();
+		sampleDataSub.put("work", "for");
+		sampleDataSub.put("Cisco", "StartUp");
+		sampleData.put("please", sampleDataSub);
+
+		DataObject sampleDataObject = new DataObject(sampleUID, sampleData);
+
+		// ======
+		// execute PUT
+		// ======
+		DataObject putResponse = sendRequest(sampleDataObject, urlUtils.appendURI(compoundUrl, sampleUID),
+				HttpMethod.PUT, DataObject.class);
+		// ======
+		// Check PUT
+		// ======
+
+		assertEquals("Failed to PUT without UID", sampleDataObject, putResponse);
+	}
+
+	@Test
 	public void deleteIdempotent() throws Exception {
 
 		// ======
